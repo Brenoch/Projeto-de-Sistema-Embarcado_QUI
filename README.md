@@ -1,284 +1,250 @@
-# Sistema de Detecção de Pontos Cegos para Veículos Pesados
+# 🚛 Sistema de Detecção de Pontos Cegos para Veículos Pesados
 
-## 🚛 Descrição do Projeto
+## 🧭 Visão Geral
 
-Este projeto implementa um sistema inteligente de detecção de objetos em pontos cegos para veículos pesados, utilizando visão computacional e inteligência artificial. O sistema usa o modelo YOLOv8 para detectar objetos em tempo real através de câmeras e estima a distância dos objetos detectados, fornecendo alertas visuais quando objetos estão muito próximos ao veículo.
+Este projeto implementa um **sistema inteligente de detecção de objetos em pontos cegos** voltado para **veículos pesados**, utilizando **visão computacional** e **inteligência artificial**.
+O sistema baseia-se no modelo **YOLOv8** para detectar objetos em tempo real a partir de câmeras, estimando a distância e emitindo **alertas visuais** quando há risco de proximidade.
 
-### 🖥️ Arquitetura do Sistema
+---
 
-#### **Hardware**
-- **Câmera USB/Webcam**: Sensor de captura de imagem em tempo real
-  - Resolução mínima recomendada: 640x480 pixels
-  - Taxa de quadros: 30 FPS ou superior
-  - Campo de visão amplo para cobertura dos pontos cegos
-- **Unidade de Processamento**: Computador embarcado ou PC
-  - CPU: Processador multi-core (Intel i5 ou AMD Ryzen 5 recomendado)
-  - RAM: Mínimo 4GB, recomendado 8GB
-  - GPU (opcional): Para aceleração de processamento IA
-- **Display**: Monitor para visualização dos alertas visuais
-- **Sistema de Montagem**: Suportes resistentes para instalação veicular
+## 🧩 Arquitetura do Sistema
 
-#### **Software**
-- **Sistema Operacional**: Windows, Linux ou macOS
-- **Runtime Python**: Versão 3.7 ou superior
-- **Bibliotecas Principais**:
-  - **OpenCV 4.x**: Processamento de imagem e vídeo em tempo real
-  - **Ultralytics**: Framework YOLOv8 para detecção de objetos
-  - **NumPy**: Computação numérica e manipulação de arrays
-  - **PyTorch**: Backend para inferência de deep learning
+### 🖥️ **Hardware**
 
-#### **Modelo de Inteligência Computacional**
-- **Arquitetura**: YOLOv8 (You Only Look Once versão 8)
-  - **Tipo**: Rede Neural Convolucional (CNN) para detecção de objetos
-  - **Paradigma**: Detecção em tempo real com uma única passada
-  - **Backbone**: CSPDarknet com melhorias arquiteturais
-  - **Neck**: PAN (Path Aggregation Network) para fusão de features
-  - **Head**: Detecção multi-escala com âncoras anchor-free
+| Componente                   | Descrição                                     | Especificação Recomendada                                  |
+| ---------------------------- | --------------------------------------------- | ---------------------------------------------------------- |
+| **Câmera USB/Webcam**        | Captura de imagem em tempo real               | ≥ 640x480 px, 30 FPS, campo de visão amplo                 |
+| **Unidade de Processamento** | Execução da inferência e do pipeline de vídeo | CPU multi-core (Intel i5 / Ryzen 5), RAM 8GB, GPU opcional |
+| **Display/Monitor**          | Exibição dos alertas e informações            | Resolução mínima HD                                        |
+| **Sistema de Montagem**      | Fixação da câmera e display em veículos       | Suporte resistente à vibração                              |
 
-- **Variantes de Modelo Disponíveis**:
-  - **YOLOv8n (Nano)**: 3.2M parâmetros, ~6ms inferência
-  - **YOLOv8s (Small)**: 11.2M parâmetros, ~8ms inferência
-  
-- **Capacidades do Modelo**:
-  - Detecção de 80 classes de objetos (COCO dataset)
-  - Localização precisa com bounding boxes
-  - Classificação com scores de confiança
-  - Inferência em tempo real (>30 FPS)
+---
 
-- **Algoritmo de Estimativa de Distância**:
-  - **Método**: Calibração baseada em altura de bounding box
-  - **Fórmula**: `distância = fator_calibração / altura_pixels`
-  - **Calibração**: Ajuste empírico baseado em medições reais
+### 💻 **Software**
 
-#### **Customizações e Implementações Específicas**
+| Item                              | Descrição                                          |
+| --------------------------------- | -------------------------------------------------- |
+| **Sistema Operacional**           | Compatível com **Windows**, **Linux** ou **macOS** |
+| **Linguagem**                     | **Python 3.7+**                                    |
+| **Principais Bibliotecas**        | `opencv-python`, `ultralytics`, `numpy`, `torch`   |
+| **Framework de IA**               | **Ultralytics YOLOv8**                             |
+| **Gerenciamento de Dependências** | `pip`                                              |
 
-O software foi customizado especificamente para aplicações em veículos pesados com as seguintes implementações:
+---
 
-1. **Sistema de Estimativa de Distância Personalizado**
-   ```python
-   def estimar_distancia_por_altura(box):
-       altura_pix = abs(box[3] - box[1])
-       if altura_pix == 0:
-           return float('inf')  # Proteção contra divisão por zero
-       distancia = fator_calibracao / altura_pix
-       return distancia, altura_pix
-   ```
-   - **Inovação**: Algoritmo proprietário baseado em perspectiva monocular
-   - **Robustez**: Tratamento de casos extremos (divisão por zero)
-   - **Flexibilidade**: Fator de calibração ajustável para diferentes cenários
+### 🤖 **Modelo de Inteligência Computacional**
 
-2. **Sistema de Alerta Visual Inteligente**
-   ```python
-   # Sistema de cores dinâmicas baseado em proximidade
-   cor = (0, 255, 0)  # Verde para distância segura
-   if distancia <= 1.0:
-       cor = (0, 0, 255)  # Vermelho para alerta de proximidade
-   ```
-   - **Threshold Configurável**: Distância de alerta personalizável (padrão: 1.0m)
-   - **Feedback Visual Imediato**: Mudança de cor instantânea
-   - **Interface Intuitiva**: Código de cores universalmente compreensível
+| Parâmetro                | Descrição                                 |
+| ------------------------ | ----------------------------------------- |
+| **Modelo Base**          | YOLOv8 (You Only Look Once v8)            |
+| **Tipo**                 | CNN (Rede Neural Convolucional)           |
+| **Paradigma**            | Detecção em tempo real (single-pass)      |
+| **Backbone**             | CSPDarknet com aprimoramentos estruturais |
+| **Head**                 | Detecção multi-escala (anchor-free)       |
+| **Treinamento Original** | Dataset COCO (80 classes)                 |
 
-3. **Filtro de Confiança Adaptativo**
-   ```python
-   if conf < 0.5:  # Filtro customizável de confiança
-       continue
-   ```
-   - **Redução de Falsos Positivos**: Threshold de 50% de confiança
-   - **Balanceamento**: Otimizado para precisão vs. sensibilidade
-   - **Ajuste Fino**: Configurável conforme necessidade da aplicação
+**Modelos Suportados:**
 
-4. **Interface de Informações Detalhadas**
-   ```python
-   texto_display = f"{label}: {distancia:.2f}m (h:{int(altura_pix)}px)"
-   ```
-   - **Informações Completas**: Classe, distância e altura em pixels
-   - **Precisão Decimal**: Distância com 2 casas decimais
-   - **Debug Visual**: Altura em pixels para calibração
+* `yolov8n.pt` – leve, rápido (~6ms/frame)
+* `yolov8s.pt` – mais preciso (~8ms/frame)
 
-5. **Configuração de Hardware Otimizada**
-   ```python
-   cap = cv2.VideoCapture(0)  # Fonte de vídeo configurável
-   model = YOLO('model/yolov8n.pt')  # Modelo otimizado para velocidade
-   ```
-   - **Flexibilidade de Entrada**: Suporte a múltiplas câmeras
-   - **Modelo Balanceado**: YOLOv8n para performance em tempo real
-   - **Gestão de Recursos**: Otimizado para hardware embarcado
+**Capacidades:**
 
-6. **Controles de Usuário Implementados**
-   ```python
-   if cv2.waitKey(1) == 27:  # ESC para sair
-       break
-   ```
-   - **Saída Segura**: Tecla ESC para encerramento controlado
-   - **Liberação de Recursos**: Cleanup automático de câmera e janelas
-   - **Interface Responsiva**: Verificação contínua de comandos
+* Detecção de múltiplas classes simultâneas
+* Estimativa de distância baseada em escala de bounding box
+* Operação em tempo real (>30 FPS)
 
-7. **Tratamento Robusto de Erros**
-   ```python
-   if not ret:  # Verificação de frame válido
-       break
-   ```
-   - **Validação de Frame**: Tratamento de falhas de captura
-   - **Recuperação Automática**: Tentativa de reconexão em caso de erro
-   - **Estabilidade**: Prevenção de crashes por falhas de hardware
+---
 
-8. **Otimizações de Performance**
-   - **Processamento Eficiente**: Uma detecção por frame
-   - **Memória Otimizada**: Conversão CPU para arrays numpy
-   - **Pipeline Otimizado**: Minimização de operações custosas
+## ⚙️ Customizações e Esforços de Desenvolvimento
 
-## ⚡ Características Principais
+O sistema foi **personalizado e aprimorado** para uso em **veículos pesados**, com foco em robustez, precisão e responsividade.
+A seguir, as principais customizações realizadas sobre o código padrão:
 
-- **Detecção em Tempo Real**: Utiliza YOLOv8 para detecção rápida e precisa de objetos
-- **Estimativa de Distância**: Calcula a distância aproximada dos objetos baseada no tamanho da bounding box
-- **Sistema de Alerta Visual**: Muda a cor dos alertas baseado na proximidade dos objetos
-- **Suporte a Webcam**: Funciona com câmeras USB padrão
-- **Interface Visual Intuitiva**: Exibe informações claras sobre objetos detectados
+### 1. 🧮 Algoritmo de Estimativa de Distância
 
-## 🛠️ Tecnologias Utilizadas
+```python
+def estimar_distancia_por_altura(box):
+    altura_pix = abs(box[3] - box[1])
+    if altura_pix == 0:
+        return float('inf')
+    distancia = fator_calibracao / altura_pix
+    return distancia, altura_pix
+```
 
-- **Python 3.x**
-- **OpenCV**: Processamento de imagem e vídeo
-- **Ultralytics YOLOv8**: Modelo de detecção de objetos
-- **NumPy**: Processamento numérico
+* Baseado em **projeção monocular e calibração empírica**
+* Proteção contra divisão por zero
+* Fator de calibração configurável via código
 
-## 📋 Pré-requisitos
+---
 
-- Python 3.7 ou superior
-- Webcam ou câmera USB
-- Sistema operacional: Windows, Linux ou macOS
+### 2. 🚨 Sistema de Alerta Visual Inteligente
 
-## 🚀 Instalação
+```python
+cor = (0, 255, 0)
+if distancia <= 1.0:
+    cor = (0, 0, 255)
+```
 
-1. **Clone o repositório:**
+* Feedback visual instantâneo
+* Limiar configurável para alertas (padrão: 1.0m)
+* Uso de **código de cores universal (verde → seguro, vermelho → alerta)**
+
+---
+
+### 3. 🎯 Filtro de Confiança Adaptativo
+
+```python
+if conf < 0.5:
+    continue
+```
+
+* Threshold ajustável para reduzir falsos positivos
+* Equilíbrio entre precisão e sensibilidade
+
+---
+
+### 4. 🧾 Interface de Informação Detalhada
+
+```python
+texto_display = f"{label}: {distancia:.2f}m (h:{int(altura_pix)}px)"
+```
+
+* Mostra **classe, distância e altura do objeto em pixels**
+* Ideal para calibração e depuração
+
+---
+
+### 5. ⚡ Otimizações de Performance
+
+* Processamento **1 detecção/frame**
+* Uso eficiente de memória via `numpy`
+* Pipeline enxuto para **tempo real em hardware limitado**
+
+---
+
+### 6. 🧰 Robustez e Usabilidade
+
+* Tratamento de erro em falhas de captura (`if not ret: break`)
+* Encerramento seguro via tecla `ESC`
+* Suporte a múltiplas câmeras configuráveis
+
+---
+
+## 🚀 Instruções de Instalação
+
+1. **Clone o repositório**
+
    ```bash
-   git clone <url-do-repositorio>
+   git clone <[url-do-repositorio](https://github.com/Brenoch/Projeto-de-Sistema-Embarcado_QUI.git)>
    cd Projeto-de-Sistema-Embarcado_QUI-main
    ```
 
-2. **Instale as dependências:**
+2. **Instale as dependências**
+
    ```bash
-   pip install ultralytics opencv-python numpy
+   pip install ultralytics opencv-python numpy torch
    ```
 
-3. **Verifique se os modelos estão presentes:**
-   - `model/yolov8n.pt` (modelo nano - mais rápido)
-   - `model/yolov8s.pt` (modelo small - mais preciso)
-   - `yolov8n.pt` (modelo na raiz do projeto)
+3. **Verifique os modelos**
 
-## 🎯 Como Usar
+   * `model/yolov8n.pt`
+   * `model/yolov8s.pt`
 
-1. **Execute o programa principal:**
-   ```bash
-   python run.py
-   ```
+---
 
-2. **Operação:**
-   - O sistema abrirá uma janela mostrando o feed da câmera
-   - Objetos detectados aparecerão com retângulos coloridos
-   - **Verde**: Objeto a distância segura
-   - **Vermelho**: Objeto muito próximo (≤ 1.0m)
-   - Informações exibidas: `[Classe]: [Distância]m (h:[altura]px)`
+## ▶️ Execução do Sistema
 
-3. **Para sair:**
-   - Pressione `ESC` para fechar o programa
-
-## ⚙️ Configuração e Calibração
-
-### Fator de Calibração
-O sistema usa um fator de calibração para estimar distâncias. Para ajustar:
-
-```python
-# No arquivo run.py, linha ~9
-fator_calibracao = 600  # Ajuste este valor
+```bash
+python run.py
 ```
 
-### Como Calibrar:
-1. Posicione um objeto conhecido a 1 metro da câmera
-2. Execute o programa e observe a altura em pixels do objeto
-3. Ajuste o `fator_calibracao` usando a fórmula:
-   ```
-   fator_calibracao = altura_em_pixels_a_1m * 1.0
-   ```
+Durante a execução:
 
-### Ajuste de Confiança:
+* Objetos detectados aparecerão com **caixas coloridas**
+* **Verde** → distância segura
+* **Vermelho** → risco de colisão (≤ 1.0m)
+* Para encerrar: pressione `ESC`
+
+---
+
+## ⚙️ Calibração
+
+1. Coloque um objeto conhecido a **1 metro** da câmera
+2. Observe a altura em pixels
+3. Ajuste o parâmetro no código:
+
 ```python
-# Filtro de confiança mínima (linha ~35)
-if conf < 0.5:  # Ajuste este valor (0.0 a 1.0)
+fator_calibracao = altura_em_pixels_a_1m * 1.0
 ```
 
-## 📁 Estrutura do Projeto
+---
+
+## 🧱 Estrutura do Projeto
 
 ```
 Projeto-de-Sistema-Embarcado_QUI-main/
-├── README.md                 # Documentação do projeto
-├── run.py                    # Programa principal
-├── yolov8n.pt               # Modelo YOLOv8 nano
-├── model/                   # Pasta de modelos
-│   ├── yolov8n.pt          # Modelo nano
-│   └── yolov8s.pt          # Modelo small
-└── models/                  # Pasta adicional de modelos
-    └── yolov8s.pt          # Modelo small
+├── README.md
+├── run.py
+├── model/
+│   ├── yolov8n.pt
+│   └── yolov8s.pt
+└── models/
+    └── yolov8s.pt
 ```
+
+---
 
 ## 🔧 Parâmetros Configuráveis
 
-| Parâmetro | Descrição | Valor Padrão |
-|-----------|-----------|--------------|
-| `fator_calibracao` | Fator para cálculo de distância | 600 |
-| `conf` | Confiança mínima para detecção | 0.5 |
-| `distancia_alerta` | Distância para alerta vermelho | 1.0m |
-| `fonte_video` | Índice da câmera | 0 |
+| Parâmetro          | Descrição                           | Valor Padrão |
+| ------------------ | ----------------------------------- | ------------ |
+| `fator_calibracao` | Constante para cálculo de distância | 600          |
+| `conf`             | Confiança mínima da detecção        | 0.5          |
+| `distancia_alerta` | Limiar de alerta (m)                | 1.0          |
+| `fonte_video`      | Índice da câmera                    | 0            |
 
-## 🎨 Personalização
+---
 
-### Mudança de Modelo:
-Para usar um modelo mais preciso (porém mais lento):
-```python
-model = YOLO('model/yolov8s.pt')  # Modelo small
-```
+## 🛠️ Tecnologias Utilizadas
 
-### Cores dos Alertas:
-```python
-cor_segura = (0, 255, 0)    # Verde (BGR)
-cor_perigo = (0, 0, 255)    # Vermelho (BGR)
-```
+* **Python 3.7+**
+* **OpenCV 4.x** – Processamento de vídeo
+* **Ultralytics YOLOv8** – Detecção de objetos
+* **NumPy** – Manipulação numérica
+* **PyTorch** – Inferência de redes neurais
 
-## 🚨 Aplicações
+---
 
-- **Caminhões**: Detecção de pedestres e veículos em pontos cegos
-- **Ônibus**: Monitoramento de áreas laterais e traseiras
-- **Veículos de Carga**: Segurança em manobras e estacionamento
-- **Equipamentos Pesados**: Detecção de pessoas em canteiros de obras
+## 💡 Aplicações
+
+* **Caminhões e ônibus** → Detecção de pedestres e veículos laterais
+* **Veículos de carga** → Apoio em manobras e estacionamento
+* **Equipamentos pesados** → Segurança em áreas industriais
+
+---
 
 ## ⚠️ Limitações
 
-- A precisão da distância depende da calibração adequada
-- Condições de iluminação podem afetar a detecção
-- O sistema é uma ferramenta auxiliar, não substitui a atenção do motorista
-- Requer câmera com boa qualidade para melhores resultados
+* A precisão depende da **calibração adequada**
+* Condições de **iluminação** interferem na detecção
+* O sistema é **auxiliar** e não substitui a atenção do condutor
 
-## 🔍 Solução de Problemas
+---
 
-### Erro: "No module named 'ultralytics'"
-```bash
-pip install ultralytics
-```
+## 🧰 Solução de Problemas
 
-### Câmera não detectada:
-- Verifique se a câmera está conectada
-- Tente alterar o índice da câmera: `cv2.VideoCapture(1)`
+| Problema                        | Solução                                 |
+| ------------------------------- | --------------------------------------- |
+| `No module named 'ultralytics'` | `pip install ultralytics`               |
+| Câmera não detectada            | Alterar `cv2.VideoCapture(1)`           |
+| Detecção imprecisa              | Ajustar `fator_calibracao` e iluminação |
 
-### Detecções imprecisas:
-- Ajuste o `fator_calibracao`
-- Melhore a iluminação
-- Use modelo mais preciso (yolov8s.pt)
+---
 
-## 📊 Performance
+## 📊 Desempenho dos Modelos
 
-| Modelo | Velocidade | Precisão | Uso Recomendado |
-|--------|------------|----------|-----------------|
-| YOLOv8n | Alta | Boa | Tempo real, recursos limitados |
-| YOLOv8s | Média | Muito Boa | Aplicações críticas |
-
-**⚠️ Aviso de Segurança**: Este sistema é uma ferramenta auxiliar e não substitui a atenção e responsabilidade do motorista. Sempre mantenha vigilância ativa durante a condução.
+| Modelo      | Velocidade | Precisão  | Recomendado Para       |
+| ----------- | ---------- | --------- | ---------------------- |
+| **YOLOv8n** | Alta       | Boa       | Tempo real / embarcado |
+| **YOLOv8s** | Média      | Excelente | Ambientes críticos     |
